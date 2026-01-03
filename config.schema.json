@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "ActronAir4Zone",
   "pluginType": "platform",
   "singular": true,
   "strictValidation": false,
