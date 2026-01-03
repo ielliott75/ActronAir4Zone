@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "ActronAir",
+  "pluginAlias": "ActronAir4Zone",
   "pluginType": "platform",
   "singular": true,
   "schema": {
@@ -8,7 +8,7 @@
       "name": {
         "title": "Platform Name",
         "type": "string",
-        "default": "ActronAir",
+        "default": "ActronAir4Zone",
         "required": true
       },
       "accessories": {
