@@ -126,16 +126,16 @@ export class ActronAirAccessory {
           this.state.TargetHeatingCoolingState = this.platform.Characteristic.TargetHeatingCoolingState.OFF;
         } else {
           switch (mode.toLowerCase()) {
-            case 'heat':
-              this.state.CurrentHeatingCoolingState = this.platform.Characteristic.CurrentHeatingCoolingState.HEAT;
-              this.state.TargetHeatingCoolingState = this.platform.Characteristic.TargetHeatingCoolingState.HEAT;
-              break;
-            case 'cool':
-              this.state.CurrentHeatingCoolingState = this.platform.Characteristic.CurrentHeatingCoolingState.COOL;
-              this.state.TargetHeatingCoolingState = this.platform.Characteristic.TargetHeatingCoolingState.COOL;
-              break;
-            case 'auto':
-              // Determine if currently heating or cooling based on temperature difference
+          case 'heat':
+            this.state.CurrentHeatingCoolingState = this.platform.Characteristic.CurrentHeatingCoolingState.HEAT;
+            this.state.TargetHeatingCoolingState = this.platform.Characteristic.TargetHeatingCoolingState.HEAT;
+            break;
+          case 'cool':
+            this.state.CurrentHeatingCoolingState = this.platform.Characteristic.CurrentHeatingCoolingState.COOL;
+            this.state.TargetHeatingCoolingState = this.platform.Characteristic.TargetHeatingCoolingState.COOL;
+            break;
+          case 'auto':
+            // Determine if currently heating or cooling based on temperature difference
               const tempDiff = this.state.TargetTemperature - this.state.CurrentTemperature;
               if (Math.abs(tempDiff) < 0.5) {
                 this.state.CurrentHeatingCoolingState = this.platform.Characteristic.CurrentHeatingCoolingState.OFF;
