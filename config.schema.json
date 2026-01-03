@@ -1,18 +1,319 @@
 {
-  "pluginAlias": "ActronAir4Zone",
+  "pluginAlias": "ActronAir",
   "pluginType": "platform",
   "singular": true,
-  "strictValidation": false,
   "schema": {
     "type": "object",
-    "required": ["name"],
-    "additionalProperties": false,
     "properties": {
       "name": {
-        "title": "Name",
+        "title": "Platform Name",
         "type": "string",
-        "default": "Example Dynamic Platform"
+        "default": "ActronAir",
+        "required": true
+      },
+      "accessories": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Accessory Name",
+              "type": "string",
+              "required": true,
+              "description": "The display name for this air conditioner in HomeKit"
+            },
+            "ip": {
+              "title": "IP Address",
+              "type": "string",
+              "required": true,
+              "format": "ipv4",
+              "description": "The local IP address of the air conditioner unit"
+            },
+            "mac": {
+              "title": "MAC Address",
+              "type": "string",
+              "required": true,
+              "pattern": "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$",
+              "description": "The MAC address of the air conditioner unit"
+            },
+            "device_token": {
+              "title": "Device Token",
+              "type": "string",
+              "required": true,
+              "description": "Unique device token from ActronAir cloud service"
+            },
+            "user_token": {
+              "title": "User Token",
+              "type": "string",
+              "required": true,
+              "description": "User access token from ActronAir cloud service"
+            },
+            "temp_key": {
+              "title": "Temperature Key",
+              "type": "string",
+              "required": true,
+              "default": "tempTarget",
+              "oneOf": [
+                { "title": "tempTarget", "enum": ["tempTarget"] },
+                { "title": "setPoint", "enum": ["setPoint"] }
+              ],
+              "description": "The API field used for setting temperature (usually tempTarget or setPoint)"
+            },
+            "seasonalMode": {
+              "title": "Enable Seasonal Temperature Ranges",
+              "type": "boolean",
+              "default": true,
+              "description": "Enable different temperature ranges for summer and winter"
+            },
+            "currentSeason": {
+              "title": "Current Season",
+              "type": "string",
+              "default": "summer",
+              "oneOf": [
+                { "title": "Summer", "enum": ["summer"] },
+                { "title": "Winter", "enum": ["winter"] }
+              ],
+              "description": "Current season for temperature range selection",
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].seasonalMode === true;"
+              }
+            },
+            "temperatureRanges": {
+              "title": "Temperature Ranges",
+              "type": "object",
+              "properties": {
+                "summer": {
+                  "title": "Summer Range",
+                  "type": "object",
+                  "properties": {
+                    "min": {
+                      "title": "Minimum Temperature (°C)",
+                      "type": "number",
+                      "default": 18,
+                      "minimum": 16,
+                      "maximum": 30
+                    },
+                    "max": {
+                      "title": "Maximum Temperature (°C)",
+                      "type": "number",
+                      "default": 26,
+                      "minimum": 16,
+                      "maximum": 30
+                    }
+                  }
+                },
+                "winter": {
+                  "title": "Winter Range",
+                  "type": "object",
+                  "properties": {
+                    "min": {
+                      "title": "Minimum Temperature (°C)",
+                      "type": "number",
+                      "default": 16,
+                      "minimum": 16,
+                      "maximum": 30
+                    },
+                    "max": {
+                      "title": "Maximum Temperature (°C)",
+                      "type": "number",
+                      "default": 24,
+                      "minimum": 16,
+                      "maximum": 30
+                    }
+                  }
+                }
+              },
+              "condition": {
+                "functionBody": "return model.accessories[arrayIndices].seasonalMode === true;"
+              }
+            },
+            "zones": {
+              "title": "Zone Configuration",
+              "type": "array",
+              "maxItems": 4,
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "title": "Zone Name",
+                    "type": "string",
+                    "required": true,
+                    "description": "Display name for this zone"
+                  },
+                  "index": {
+                    "title": "Zone Index",
+                    "type": "number",
+                    "required": true,
+                    "minimum": 0,
+                    "maximum": 7,
+                    "description": "Position of the zone in the zones list (0-based)"
+                  },
+                  "enabled": {
+                    "title": "Enable Zone",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable or disable this zone"
+                  },
+                  "minTemp": {
+                    "title": "Minimum Temperature (°C)",
+                    "type": "number",
+                    "default": 16,
+                    "minimum": 16,
+                    "maximum": 30,
+                    "description": "Minimum temperature for this zone (overrides seasonal settings)"
+                  },
+                  "maxTemp": {
+                    "title": "Maximum Temperature (°C)",
+                    "type": "number",
+                    "default": 30,
+                    "minimum": 16,
+                    "maximum": 30,
+                    "description": "Maximum temperature for this zone (overrides seasonal settings)"
+                  },
+                  "useSeasonalRanges": {
+                    "title": "Use Seasonal Temperature Ranges",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Use seasonal temperature ranges instead of zone-specific min/max"
+                  }
+                }
+              }
+            },
+            "pollingInterval": {
+              "title": "Polling Interval (seconds)",
+              "type": "number",
+              "default": 60,
+              "minimum": 10,
+              "maximum": 300,
+              "description": "How often to poll the AC unit for status updates"
+            },
+            "debug": {
+              "title": "Enable Debug Logging",
+              "type": "boolean",
+              "default": false,
+              "description": "Enable detailed debug logging"
+            }
+          }
+        }
       }
     }
-  }
+  },
+  "layout": [
+    {
+      "type": "fieldset",
+      "title": "ActronAir Platform Configuration",
+      "expandable": true,
+      "expanded": false,
+      "items": [
+        "name"
+      ]
+    },
+    {
+      "key": "accessories",
+      "type": "array",
+      "orderable": false,
+      "buttonText": "Add Air Conditioner",
+      "items": [
+        {
+          "type": "fieldset",
+          "title": "{{ accessories[arrayIndices].name || 'New Air Conditioner' }}",
+          "expandable": true,
+          "expanded": true,
+          "items": [
+            {
+              "type": "section",
+              "title": "Basic Configuration",
+              "items": [
+                "accessories[].name",
+                "accessories[].ip",
+                "accessories[].mac"
+              ]
+            },
+            {
+              "type": "section",
+              "title": "ActronAir Cloud Configuration",
+              "items": [
+                "accessories[].device_token",
+                "accessories[].user_token",
+                "accessories[].temp_key"
+              ]
+            },
+            {
+              "type": "section",
+              "title": "Seasonal Temperature Settings",
+              "items": [
+                "accessories[].seasonalMode",
+                "accessories[].currentSeason",
+                {
+                  "key": "accessories[].temperatureRanges",
+                  "type": "section",
+                  "title": "Temperature Ranges by Season",
+                  "condition": "accessories[arrayIndices].seasonalMode === true",
+                  "items": [
+                    "accessories[].temperatureRanges.summer.min",
+                    "accessories[].temperatureRanges.summer.max",
+                    "accessories[].temperatureRanges.winter.min",
+                    "accessories[].temperatureRanges.winter.max"
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "accessories[].zones",
+              "type": "array",
+              "title": "Zones (Max 4)",
+              "orderable": false,
+              "buttonText": "Add Zone",
+              "items": [
+                {
+                  "type": "div",
+                  "displayFlex": true,
+                  "flex-direction": "row",
+                  "items": [
+                    {
+                      "key": "accessories[].zones[].name",
+                      "flex": "1 1 150px"
+                    },
+                    {
+                      "key": "accessories[].zones[].index",
+                      "flex": "0 1 100px"
+                    },
+                    {
+                      "key": "accessories[].zones[].enabled",
+                      "flex": "0 1 100px"
+                    }
+                  ]
+                },
+                "accessories[].zones[].useSeasonalRanges",
+                {
+                  "type": "div",
+                  "displayFlex": true,
+                  "flex-direction": "row",
+                  "condition": "accessories[arrayIndices].zones[arrayIndices[1]].useSeasonalRanges === false",
+                  "items": [
+                    {
+                      "key": "accessories[].zones[].minTemp",
+                      "flex": "1 1 50%"
+                    },
+                    {
+                      "key": "accessories[].zones[].maxTemp",
+                      "flex": "1 1 50%"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "title": "Advanced Settings",
+              "items": [
+                "accessories[].pollingInterval",
+                "accessories[].debug"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
