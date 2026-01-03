@@ -234,18 +234,18 @@ export class ActronAirAccessory {
       let isOn = true;
 
       switch (targetValue) {
-        case this.platform.Characteristic.TargetHeatingCoolingState.OFF:
-          isOn = false;
-          break;
-        case this.platform.Characteristic.TargetHeatingCoolingState.HEAT:
-          mode = 'HEAT';
-          break;
-        case this.platform.Characteristic.TargetHeatingCoolingState.COOL:
-          mode = 'COOL';
-          break;
-        case this.platform.Characteristic.TargetHeatingCoolingState.AUTO:
-          mode = 'AUTO';
-          break;
+      case this.platform.Characteristic.TargetHeatingCoolingState.OFF:
+        isOn = false;
+        break;
+      case this.platform.Characteristic.TargetHeatingCoolingState.HEAT:
+        mode = 'HEAT';
+        break;
+      case this.platform.Characteristic.TargetHeatingCoolingState.COOL:
+        mode = 'COOL';
+        break;
+      case this.platform.Characteristic.TargetHeatingCoolingState.AUTO:
+        mode = 'AUTO';
+        break;
       }
 
       // Update the AC unit
