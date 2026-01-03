@@ -1,6 +1,6 @@
 import type { CharacteristicValue, PlatformAccessory, Service } from 'homebridge';
 
-import type { ExamplePlatformAccessory } from './platform.js';
+import type { ExamplePlatformAccessory } from './platform.ts';
 
 /**
  * Platform Accessory
