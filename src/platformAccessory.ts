@@ -135,7 +135,9 @@ export class ActronAirAccessory {
             this.state.TargetHeatingCoolingState = this.platform.Characteristic.TargetHeatingCoolingState.COOL;
             break;
           case 'auto':
-            const tempDiff = this.state.TargetTemperature - this.state.CurrentTemperature;
+            {
+              const tempDiff = this.state.TargetTemperature - this.state.CurrentTemperature;
+            }
             if (Math.abs(tempDiff) < 0.5) {
               this.state.CurrentHeatingCoolingState = this.platform.Characteristic.CurrentHeatingCoolingState.OFF;
             } else if (tempDiff > 0) {
