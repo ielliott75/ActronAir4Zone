@@ -1,6 +1,6 @@
 import type { CharacteristicValue, PlatformAccessory, Service } from 'homebridge';
 
-import type { ActronAir4Zone } from './platform.js';
+import type { ExamplePlatformAccessory } from './platform.js';
 
 /**
  * Platform Accessory
