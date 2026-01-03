@@ -146,7 +146,7 @@ export class ActronAirAccessory {
             }
             this.state.TargetHeatingCoolingState = this.platform.Characteristic.TargetHeatingCoolingState.AUTO;
             break;
-            }
+          }
           }
         }
       }
