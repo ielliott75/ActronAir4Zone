@@ -1,7 +1,7 @@
 import { API, DynamicPlatformPlugin, Logger, PlatformAccessory, PlatformConfig, Service, Characteristic } from 'homebridge';
-import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
-import { ActronAirAccessory } from './platformAccessory';
-import { ActronAirZoneAccessory } from './zoneAccessory';
+import { PLATFORM_NAME, PLUGIN_NAME } from './settings.js';
+import { ActronAirAccessory } from './platformAccessory.js';
+import { ActronAirZoneAccessory } from './zoneAccessory.js';
 
 export interface Zone {
   name: string;
@@ -39,8 +39,8 @@ export interface AccessoryConfig {
 }
 
 export class ActronAirPlatform implements DynamicPlatformPlugin {
-  public readonly Service: typeof Service = this.api.hap.Service;
-  public readonly Characteristic: typeof Characteristic = this.api.hap.Characteristic;
+  public readonly Service: typeof Service;
+  public readonly Characteristic: typeof Characteristic;
   public readonly accessories: PlatformAccessory[] = [];
 
   constructor(
@@ -48,6 +48,8 @@ export class ActronAirPlatform implements DynamicPlatformPlugin {
     public readonly config: PlatformConfig,
     public readonly api: API,
   ) {
+    this.Service = this.api.hap.Service;
+    this.Characteristic = this.api.hap.Characteristic;
     this.log.debug('Finished initializing platform:', this.config.name);
 
     this.api.on('didFinishLaunching', () => {

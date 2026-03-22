@@ -1,5 +1,5 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
-import { ActronAirPlatform, AccessoryConfig } from './platform';
+import { ActronAirPlatform, AccessoryConfig } from './platform.js';
 import axios from 'axios';
 
 /**
@@ -335,22 +335,12 @@ export class ActronAirAccessory {
     }
 
     try {
-      // Get current state
-      const response = await axios.get(this.baseUrl, {
-        params: { user_access_token: this.config.user_token },
-        timeout: 10000,
-      });
-
-      const data = response.data;
-      const airconSettings = data.lastKnownState?.UserAirconSettings || {};
-
       // Update the temperature using the configured temp_key
-      const updateData: any = {
+      const updateData = {
         lastKnownState: {
-          UserAirconSettings: {},
+          UserAirconSettings: { [this.config.temp_key]: temp },
         },
       };
-      updateData.lastKnownState.UserAirconSettings[this.config.temp_key] = temp;
 
       await axios.post(
         this.baseUrl,
