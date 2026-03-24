@@ -1,5 +1,5 @@
 import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
-import { ActronAirPlatform, Zone, AccessoryConfig } from './platform';
+import { ActronAirPlatform, Zone, AccessoryConfig } from './platform.js';
 import axios from 'axios';
 
 export class ActronAirZoneAccessory {
